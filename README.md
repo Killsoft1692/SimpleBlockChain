@@ -5,6 +5,8 @@
 * Install requirements => ```pip install -r requirements.txt```
 * Run local server => ```./main.py ```
 
+## DOCKER
+
 ### Build
 * docker build . -t blockchain
 
