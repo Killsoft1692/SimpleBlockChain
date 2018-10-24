@@ -12,6 +12,19 @@ CHAIN = Chain().get_chain()
 
 @app.route('/', methods=['GET'])
 def index():
+    """ Simple BlockChain example
+        Routes:
+             - chain/ - get chain,
+                available methods = ["GET"],
+                response = {
+                    "data": "str",
+                    "hash": "str",
+                    "prev_hash": "str"
+                    }
+             - chain/add_block - add new block,
+                available methods = ["POST"],
+                response = {"data": "str"}
+    """
     return {'data': 'BlockChain APP'}, status.HTTP_200_OK
 
 
