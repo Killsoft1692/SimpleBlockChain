@@ -4,6 +4,8 @@ from main import app
 from settings import BACON_API_URL
 from models.block import Block
 from models.chain import Chain
+from models.node import Node
+from flask import request
 from flask_api import status
 
 
@@ -29,6 +31,14 @@ def index():
     return {'data': 'BlockChain APP'}, status.HTTP_200_OK
 
 
+@app.route('/nodes', methods=["GET", "POST"])
+def nodes():
+    if request.method == "POST" and request.data.get('url'):
+        Node.add_node(request.data['url'])
+        return list(Node.nodes), status.HTTP_201_CREATED
+    return list(Node.nodes), status.HTTP_200_OK
+
+
 @app.route('/chain', methods=['GET'])
 def get_chain():
     if CHAIN.is_valid():
@@ -42,5 +52,5 @@ def get_chain():
 @app.route('/chain/add_block', methods=['POST'])
 def add_block():
     CHAIN.get_chain().append(Block(CHAIN.get_chain()[-1].hash, requests.get(BACON_API_URL).json()[0],
-                       datetime.datetime.now()))
+                                   datetime.datetime.now(), save=True))
     return {'data': CHAIN.get_chain()[-1].data}, status.HTTP_201_CREATED

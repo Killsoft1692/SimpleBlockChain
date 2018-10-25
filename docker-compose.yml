@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    command: mongod
+  blockchain:
+    container_name: blockchain
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - DB=mongodb://mongodb:27017/Blockchain
+    links:
+      - mongodb
+    ports:
+      - 8080:8080

@@ -1,4 +1,5 @@
 from models.block import Block
+from main import mongo
 
 
 class Chain:
@@ -8,7 +9,9 @@ class Chain:
         if self.__has_instances:
             raise Exception('Chain already created')
         else:
-            self.chain = [Block.create_genesis_block()]
+            self.chain = [Block.create_genesis_block()] if mongo.db.blocks.count() == 0\
+                else [Block(bl.get('prev_hash'), bl.get('data'), bl.get('timestamp'))
+                      for bl in mongo.db.blocks.find({})]
             self.singleton()
 
     @classmethod
