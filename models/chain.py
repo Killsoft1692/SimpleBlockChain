@@ -14,6 +14,9 @@ class Chain:
                       for bl in mongo.db.blocks.find({})]
             self.singleton()
 
+    def __len__(self):
+        return len(self.chain)
+
     @classmethod
     def singleton(cls):
         cls.__has_instances = True
@@ -26,5 +29,5 @@ class Chain:
                     return False
         return True
 
-    def get_chain(self):
+    def get_blocks_list(self):
         return self.chain
