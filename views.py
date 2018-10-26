@@ -27,6 +27,10 @@ def index():
              - chain/add_block - add new block;
                 available methods = ["POST"];
                 response = {"data": "str"}.
+             - /nodes - get or add nodes
+                available methods = ["GET", "POST"];
+                request = {"url": "http://example.com:8080"};
+                response = ["str"].
     """
     return {'data': 'BlockChain APP'}, status.HTTP_200_OK
 
@@ -51,7 +55,7 @@ def get_chain():
                 response = {'error': 'chain is not valid'}, status.HTTP_400_BAD_REQUEST
         else:
             # update target node chain here
-            return redirect('{}/chain'.format(canonical_node[0]))
+            response = redirect('{}/chain'.format(canonical_node[0]))
     else:
         response = {'error': 'add nodes first'}, status.HTTP_400_BAD_REQUEST
     return response
