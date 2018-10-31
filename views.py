@@ -1,7 +1,7 @@
 import datetime
 import requests
 from main import app
-from settings import BACON_API_URL
+from settings import BACON_API_URL, IDENTIFIER
 from models.block import Block
 from models.chain import Chain
 from models.node import Node
@@ -32,15 +32,21 @@ def index():
                 request = {"url": "http://example.com:8080"};
                 response = ["str"].
     """
-    return {'data': 'BlockChain APP'}, status.HTTP_200_OK
+    return {'data': 'BlockChain APP', 'identifier': IDENTIFIER}, status.HTTP_200_OK
 
 
 @app.route('/nodes', methods=["GET", "POST"])
 def nodes():
     if request.method == "POST" and request.data.get('url'):
-        Node.add_node(request.data['url'])
-        return list(Node.nodes), status.HTTP_201_CREATED
-    return list(Node.nodes), status.HTTP_200_OK
+        new_node = Node(request.data['url'])
+        if new_node.is_valid():
+            new_node.save()
+            response = list(Node.nodes), status.HTTP_201_CREATED
+        else:
+            response = {'error': 'node is not valid'}, status.HTTP_400_BAD_REQUEST
+    else:
+        response = list(Node.nodes), status.HTTP_200_OK
+    return response
 
 
 @app.route('/chain', methods=['GET'])
