@@ -1,4 +1,6 @@
 import requests
+from requests.exceptions import MissingSchema, InvalidSchema
+from json.decoder import JSONDecodeError
 from operator import itemgetter
 from main import mongo
 from settings import IDENTIFIER
@@ -16,9 +18,12 @@ class Node:
         mongo.db.nodes.insert({'url': self.node})
 
     def is_valid(self):
-        if requests.get(self.node).status_code == 200:
-            if requests.get(self.node).json().get('identifier') == IDENTIFIER:
-                return True
+        try:
+            if requests.get(self.node).status_code == 200:
+                if requests.get(self.node).json().get('identifier') == IDENTIFIER:
+                    return True
+        except (MissingSchema, InvalidSchema, JSONDecodeError):
+            pass
         return False
 
     @classmethod
