@@ -8,7 +8,7 @@
 ## DOCKER
 
 ### Build
-* docker build . -t blockchain
+* docker-compose build
 
 ### Run
-* docker run -p 8080:8080 blockchain
+* docker compose up
