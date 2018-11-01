@@ -39,7 +39,7 @@ def index():
 def nodes():
     if request.method == "POST" and request.data.get('url'):
         new_node = Node(request.data['url'])
-        if new_node.is_valid():
+        if new_node.is_valid(request):
             new_node.save()
             response = list(Node.nodes), status.HTTP_201_CREATED
         else:

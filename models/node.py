@@ -1,5 +1,6 @@
 import requests
 from requests.exceptions import MissingSchema, InvalidSchema
+from urllib.parse import urlparse
 from json.decoder import JSONDecodeError
 from operator import itemgetter
 from main import mongo
@@ -11,16 +12,23 @@ class Node:
         else set([node.get('url') for node in mongo.db.nodes.find({})])
 
     def __init__(self, node):
-        self.node = node
+        self.url = node
+
+    @staticmethod
+    def clean_url(url):
+        return urlparse(url).netloc
 
     def save(self):
-        Node.nodes.add(self.node)
-        mongo.db.nodes.insert({'url': self.node})
+        Node.nodes.add(self.url)
+        mongo.db.nodes.insert({'url': self.url})
 
-    def is_valid(self):
+    def is_valid(self, request=None):
+        if request:
+            if self.clean_url(self.url) == self.clean_url(request.url_root):
+                return False
         try:
-            if requests.get(self.node).status_code == 200:
-                if requests.get(self.node).json().get('identifier') == IDENTIFIER:
+            if requests.get(self.url).status_code == 200:
+                if requests.get(self.url).json().get('identifier') == IDENTIFIER:
                     return True
         except (MissingSchema, InvalidSchema, JSONDecodeError):
             pass
