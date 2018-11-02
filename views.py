@@ -1,12 +1,13 @@
 import datetime
 import requests
+from flask import request, redirect
+from flask_api import status
 from main import app
 from settings import BACON_API_URL, IDENTIFIER
 from models.block import Block
 from models.chain import Chain
 from models.node import Node
-from flask import request, redirect
-from flask_api import status
+from pagination import Pagination
 
 
 CHAIN = Chain()
@@ -49,14 +50,18 @@ def nodes():
     return response
 
 
-@app.route('/chain', methods=['GET'])
-def get_chain():
+@app.route('/chain', defaults={'page': 1}, methods=['GET'])
+@app.route('/chain/page=<int:page>')
+def get_chain(page):
+    data = Pagination([{'data': item.data, 'prev_hash': str(item.previous_block_hash), 'hash': str(item.hash)}
+                       for item in CHAIN.get_blocks_list()])
+    if page > data.page_count or page == 0:
+        return {}, status.HTTP_404_NOT_FOUND
     canonical_node = Node.get_node_with_canonical_chain()
     if canonical_node:
         if canonical_node[1] <= len(CHAIN):
             if CHAIN.is_valid():
-                response = [{'data': item.data, 'prev_hash': str(item.previous_block_hash), 'hash': str(item.hash)} for item in
-                            CHAIN.get_blocks_list()], status.HTTP_200_OK
+                response = data.paginated().get(page), status.HTTP_200_OK
             else:
                 response = {'error': 'chain is not valid'}, status.HTTP_400_BAD_REQUEST
         else:
