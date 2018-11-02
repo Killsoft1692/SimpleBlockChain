@@ -61,7 +61,7 @@ def get_chain(page):
     if canonical_node:
         if canonical_node[1] <= len(CHAIN):
             if CHAIN.is_valid():
-                response = data.paginated().get(page), status.HTTP_200_OK
+                response = data.paginated(page), status.HTTP_200_OK
             else:
                 response = {'error': 'chain is not valid'}, status.HTTP_400_BAD_REQUEST
         else:
