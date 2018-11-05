@@ -8,7 +8,8 @@ class Pagination:
 
     @property
     def page_count(self):
-        return len(self.obj) // self._page_size + 1
+        return len(self.obj) // self._page_size \
+               + (1 if len(self.obj) % self._page_size != 0 else 0)
 
     def paginated(self, page):
         return self.obj[self._page_size * (page - 1):self._page_size * page]
